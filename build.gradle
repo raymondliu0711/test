@@ -20,11 +20,33 @@ test {
     useJUnitPlatform()
 }
 
-// 添加 JAR 打包配置
+// 替换原来的JAR配置，创建包含所有依赖的fat JAR
 jar {
     manifest {
         attributes(
                 'Main-Class': 'org.main.Main'
         )
     }
+    // 下面这行是关键：打包时排除掉签名信息
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 }
+
+// 添加一个新任务来创建包含所有依赖的fat JAR
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+                'Main-Class': 'org.main.Main'
+        )
+    }
+    archiveClassifier = 'all'
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// 添加一个任务依赖，使得build任务会构建fat JAR
+build.dependsOn fatJar
