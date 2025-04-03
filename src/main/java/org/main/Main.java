@@ -1,4 +1,6 @@
-package ethereum.ckzg4844;
+package org.main;
+
+import ethereum.ckzg4844.CKZG4844JNI;
 
 public class Main {
   public static void main(String[] args) {

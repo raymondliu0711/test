@@ -24,7 +24,7 @@ test {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'ethereum.ckzg4844.Main'
+                'Main-Class': 'org.main.Main'
         )
     }
 }
